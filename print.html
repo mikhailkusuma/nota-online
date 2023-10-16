@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="assets/css/print.css">
+    <title>Print & Detail | The Cashier</title>
+</head>
+
+<body>
+    <div class="ticket" id="dataPrint">
+        <!-- Di JS  -->
+    </div>
+    <button id="btnPrint" class="hidden-print">Print</button>
+    <button id="btnPrint" onclick="location.href='index.html'" class="hidden-print">Kembali</button>
+    <script src="./assets/js/print.js"></script>
+    <script>
+        let urlId = window.location.search.substr(1).split('=')[1]
+        // console.log(urlId)
+
+        if (!localStorage.getItem('DataPesanan')) {
+            alert('Anda tidak bisa melakukan Cetak Data dikarenakan data yang ingin anda cetak tidak ditemukan')
+            window.location = "order.html"
+        } else {
+            let data = JSON.parse(localStorage.DataPesanan)
+            // console.log(data)
+            // console.log(data[urlId])
+            if (!data[urlId]) {
+                alert('Data yang ingin anda cetak tidak ditemukan')
+                window.location = "order.html"
+            } else {
+                let subTotalAll = 0;
+                let result = `<img src="images/logo.png" alt="Logo">
+                                    <p class="centered">
+                                        FAKTUR PENJUALAN <br>
+                                        YOUWAN CELL <br>
+                                        TEGAL BOTO LOR, SUMBERSARI, KEC. SUMBERSARI, KABUPATEN JEMBER, JAWA TIMUR<br>
+                                        NO. WA : 0823-4071-3668
+                                    </p>
+                                    <p><hr></p>
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>TANGGAL</td>
+                                                <td class="titik-dua">:</td>
+                                                <td id="tanggalTransaksi">${data[urlId].tanggalTransaksi}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>NO. TRANSAKSI</td>
+                                                <td class="titik-dua">:</td>
+                                                <td id="noTransaksi">${data[urlId].noTransaksi.toUpperCase()}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PRAMUNIAGA</td>
+                                                <td class="titik-dua">:</td>
+                                                <td id="namaKaryawan">${data[urlId].namaKaryawan.toUpperCase()}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p><hr></p>
+                                    <table class="table-me">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3" class="title-items">ITEMS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+                data[urlId].barang.forEach(key => {
+                    result += `<tr>
+                                            <td class="col-list">-</td>
+                                            <td width="166px">
+                                                ${key.namaBarang.toUpperCase()}
+                                                <br>
+                                                ${key.qty} * ${key.hargaBarang}
+                                            </td>
+                                            <td class="col-price">
+                                                ${key.subTotal}
+                                            </td>
+                                        </tr>`;
+                    subTotalAll += parseInt(key.subTotal)
+                })
+
+                result += `     </tbody>
+                                    </table>
+                                    <br>
+                                    <table class="table-me">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="col-title">SUBTOTAL :</td>
+                                                <td class="col-description-price">${subTotalAll}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p><hr></p>
+                                    <table class="table-me">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="col-title">SUBTOTAL :</td>
+                                                <td class="col-description-price">${subTotalAll}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="col-title">DISKON :</td>
+                                                <td class="col-description-price">${data[urlId].diskon ? data[urlId].diskon : 0}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="col-title">PAJAK :</td>
+                                                <td class="col-description-price">${data[urlId].pajak ? data[urlId].pajak : 0}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="col-title">TOTAL :</td>
+                                                <td class="col-description-price">${parseInt(subTotalAll) - parseInt(data[urlId].diskon ? data[urlId].diskon : 0) + parseInt(data[urlId].pajak ? data[urlId].pajak : 0)}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p><hr></p>
+                                    <p class="centered">
+                                        MURAH - BERKUALITAS - BERGARANSI
+                                        <br>
+                                        TERIMA KASIH SUDAH BERBELANJA!
+                                        <br>
+                                        DEV. RAHARJA
+                                    </p>`;
+                document.getElementById('dataPrint').innerHTML = result;
+            }
+        }
+    </script>
+</body>
+
+</html>
